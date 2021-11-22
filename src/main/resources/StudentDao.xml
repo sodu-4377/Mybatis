@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.mybatisdemo2.dao.StudentDao">
+    <select id="select" resultType="stu">
+        select * from tb_student where id=#{id}
+    </select>
+
+    <insert id="insert">
+        insert into tb_student (id,name,age) values (#{id},#{name},#{age})
+    </insert>
+
+    <select id="getAll" resultType="stu">
+        select * from tb_student
+    </select>
+    <select id="selectage" resultType="stu">
+/*
+#{age}中的age是一个形参，可以写为其他的，但是要见名知意，
+    如果传递的参数类型是一个domain引用类型，#｛｝中的标识符必须是domain类的属性名。
+*/
+        select * from tb_student where age=#{age}
+    </select>
+<!--    -->
+    <select id="select2"  resultType="stu">
+        select * from tb_student where name=#{name} and age=#{age}
+    </select>
+<!--    #｛｝相当于preparedStatement ，可防止sql注入，${} 是createStatement  id=‘#｛value｝’-->
+    <select id="selectmap" parameterType="map" resultType="stu">
+        select * from tb_student where name=#{name} and age=#{age}
+    </select>
+    <select id="selectcon" resultType="stu">
+        select * from tb_student where name like  '%' #{value} '%'
+    </select>
+    <select id="select3" resultType="map">
+        select * from tb_student
+    </select>
+
+<!--    id  resultMap的唯一标识-->
+<!--    type 指定一个类型，与数据表一一对应，建立起表字段和类属性的名字一一匹配的关系-->
+    <resultMap id="stuMap" type="stu">
+<!--        id配置主键的对应关系的-->
+        <id property="id" column="id"></id>
+<!--        另外两个Result标签   column 数据库中的属性名。-->
+        <result property="name" column="name"></result>
+        <result property="age" column="age"></result>
+    </resultMap>
+    <select id="select16" resultMap="stuMap">
+        select * from rb_student
+    </select>
+
+
+<!--    //动态sql
+/*
+where标签在使用时候，需要搭配where中的if来使用
+通过if标签判断，如果有关键字，展示where关键字
+*/-->
+    <select id="select17" resultType="stu">
+        select *  from tb_student
+
+        <where >
+            <if test="name!=null and name!=''">
+                and name like '%' #{name} '%'
+            </if>
+            <if test="age!=null and age !=''">
+                and age= #{age}
+            </if>
+        </where>
+    </select>
+
+    <select id="select18" resultType="stu">
+    <include refid="sql1"/> where id in
+/*
+        collection  传递参数的类型 ，array 数组 、   list 集合
+        item  每次遍历出来的元素 在使用该元素的时候，需要套用在#｛｝
+        open  拼接循环的开始
+        close 拼接循环的结束
+        separator  元素与元素的分隔符
+*/
+        <foreach collection="array" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
+
+
+<!--    sql标签制作sql片段  :一般用来代替重复率高并且复杂的子查询
+        引用：<include refid="sql1"/>
+        对于sql片段
+        在一个mapper之下，出现大量重复的子查询很少，所以一般不使用sql
+-->
+    <sql id="sql1">
+        select  * from tb_student
+    </sql>
+    <select id="select20" resultType="map">
+        select s.name as sname ,c.name as cname
+from tb_student s
+join tb_classroom  c
+where s.classroomId=c.id
+
+    </select>
+
+    <select id="select21" resultType="com.example.mybatisdemo2.vo.StudenAndClassroom">
+        select
+        s.id sid,
+        s.name  sname,
+        s.age sage,
+        s.classroomId sroom,
+        c.id cid,
+        c.name croomid
+
+from tb_student s
+join tb_classroom c
+where s.classroomId=c.id
+    </select>
+
+    <select id="select22" resultType="com.example.mybatisdemo2.vo.StudenAndClassroom">
+        select
+            s.id sid,
+            s.name  sname,
+            s.age sage,
+            s.classroomId sroom,
+            c.id cid,
+            c.name croomid
+
+        from tb_student s
+                 join tb_classroom c
+        on s.classroomId=c.id
+        where s.name like '%' #{name} '%'
+</select>
+
+
+</mapper>

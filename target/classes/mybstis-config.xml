@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <properties resource="db.properties"/>
+<!--    加载配置文件-->
+
+<!--    设置与数据库交互的环境
+        配置二级缓存，配置延迟加载策略，
+        加快查询速度
+        以后企业不会使用，
+        setting 对于查询优化不明显，
+
+        遇到海量级别的数据，如何查询优化，？
+        1、基础操作
+            为常用字段设置索引，普通索引。
+
+        2、高级操作
+            nosql数据库  Redis缓存数据库，在内存中存储数据，加速查询效率
+        3、专业操作
+            搜索引擎：
+                solr 和 ElasticSearch（查询效率更高）
+            针对于电商行业
+-->
+<!--    <settings>-->
+<!--        <setting name="" value=""/>-->
+<!--    </settings>-->
+
+<!--
+        typeAliases为mapper映射文件中的domain起别名
+        为指定类起别名,
+-->
+    <typeAliases>
+        <typeAlias type="com.example.mybatisdemo2.domain.Student" alias="stu"/>
+    </typeAliases>
+
+<!--    使用package标签批量起别名
+         mybatis默认起好的名，别名为类名 ,忽略大小写，但是一般还是写类名
+         name； 指定一个包结构，表示在 改包下，所有的domain自动起好了别名，就是类名
+         实际中批量起别名用mybatis，
+         有的是直接写路径名+包名，方便阅读
+         -->
+<!--    <typeAliases>-->
+<!--        <package name="com.example.mybatisdemo2.domain"/>-->
+<!--    </typeAliases>-->
+
+
+    <environments default="development">
+        <environment id="development">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="${jdbc.driver}"/>
+                <property name="url" value="${jdbc.url}"/>
+                <property name="username" value="${jdbc.username}"/>
+                <property name="password" value="${jdbc.password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+    <mappers>
+<!--        resource 指定mapper文件-->
+       <mapper resource="StudentDao.xml"/>
+<!--        使用Class属性找到Dao层接口的全路径-->
+<!--        <mapper class="StudentDao.xml"/>-->
+<!--        批量注册 ,在这个包名下边的mapper文件都注册-->
+<!--        <package name="com.example.mybatisdemo2.dao"/>-->
+    </mappers>
+</configuration>
